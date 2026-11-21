@@ -29,6 +29,7 @@
 
 **其它**
 
+- 新增 `dsh.bundle` 声明与随包生成的 `cordis.patch.yml`，支持通过插件管理器 / `dsh plugin add` 安装。
 - 推理等级：点底部推理等级徽标直达列表，再点收起。
 - 模型页与推理等级页均有返回键（并入搜索行），Esc 仍可用。
 - `scripts/build.py`：从 `app.asar` 重放官方 bundle，校验 11 段 region、替换 5 段、全局改名；支持 `--emit` / `--check`、`--asar` 与环境变量定位安装目录。

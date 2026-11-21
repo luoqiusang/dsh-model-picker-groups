@@ -57,6 +57,10 @@ Write-Host "[2/3] 已备份 patch：$backup"
 $text = Get-Content $PatchPath -Raw -Encoding UTF8
 $begin = "# >>> $Marker"
 $end   = "# <<< $Marker"
+if (-not $text.Contains($begin) -and $text -match '(?m)^\s*(?:-\s*)?name:\s*[''"]?dsh-model-picker-groups[''"]?\s*(?:#.*)?$') {
+  Write-Host '[3/3] patch 已由 bundle 挂载 dsh-model-picker-groups，跳过追加。'
+  return
+}
 if ($text.Contains($begin)) {
   $pattern = [regex]::Escape($begin) + '.*?' + [regex]::Escape($end) + "`r?`n?"
   $text = [regex]::Replace($text, $pattern, '', 'Singleline')
@@ -75,9 +79,9 @@ $block = @(
   "$end"
   ''
 ) -join "`r`n"
-# 保证与原文之间有空行分隔
-if (-not $text.EndsWith("`n")) { $text += "`r`n" }
-$text += $block
+# 保证与原文之间只有一个空行分隔（先裁掉尾部换行，重复运行不会累积空行）
+$text = $text.TrimEnd("`r", "`n")
+$text += "`r`n" + $block
 [IO.File]::WriteAllText($PatchPath, $text, (New-Object Text.UTF8Encoding($false)))
 Write-Host "[3/3] 已写入 patch 条目：$PatchPath"
 

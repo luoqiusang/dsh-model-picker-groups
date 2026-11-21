@@ -1,0 +1,5 @@
+- id: ui-model-selection
+  disabled: true
+- insert:
+    - id: model-picker-groups
+      name: dsh-model-picker-groups

@@ -43,12 +43,22 @@ DSH 升级后官方 bundle 变化会让重建失败（脚本报 region 校验错
 
 ## 安装
 
-当前未发布到 npm 或插件市场，需手工挂载：把仓库放到 profile 的 `node_modules` 下，并在 `cordis.patch.yml` 里禁用官方插件、插入本插件。
+### 1. 通过插件管理器安装（推荐）
 
-### Windows
+`package.json` 现已声明 `dsh.bundle`，指向随包提供的 `cordis.patch.yml`。该补丁会禁用官方 `ui-model-selection` 并插入本插件，所以装上即接管，不需要再手工改 profile。尚未实测的是「桌面端插件管理器会不会自动应用这个 `bundle.patch`」——那是插件管理器自身的安装流程。
+
+桌面端请在应用内 **设置 → 插件** 里安装仓库 `https://github.com/luoqiusang/dsh-model-picker-groups`；不要通过 CLI 修改 desktop profile，CLI 会报该 profile 由 Electron 管理。非 Electron 管理的 profile 可使用 `dsh plugin add` 安装该仓库。
+
+当前尚未发布到 npm 或插件市场。离线或不能使用插件管理器时，按下面的手动方式挂载。
+
+### 2. 手动 / 离线安装
+
+把仓库放到 profile 的 `node_modules` 下，并在 profile 的 `cordis.patch.yml` 里禁用官方插件、插入本插件；`install.ps1` 是此方式的辅助脚本。
+
+#### Windows
 
 ```powershell
-git clone https://github.com/luqiusang/dsh-model-picker-groups.git D:\path\to\dsh-model-picker-groups
+git clone https://github.com/luoqiusang/dsh-model-picker-groups.git D:\path\to\dsh-model-picker-groups
 powershell -NoProfile -ExecutionPolicy Bypass -File D:\path\to\dsh-model-picker-groups\install.ps1
 ```
 
@@ -56,7 +66,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File D:\path\to\dsh-model-picker-
 
 1. 在 `%USERPROFILE%\.dsh\profiles\<profile>\node_modules\dsh-model-picker-groups` 建 junction 指向仓库；
 2. 备份 `cordis.patch.yml`；
-3. 追加一段用 `# >>> dsh-model-picker-groups` / `# <<< dsh-model-picker-groups` 包裹的补丁（幂等，重复运行只替换这段）：
+3. 追加一段用 `# >>> dsh-model-picker-groups` / `# <<< dsh-model-picker-groups` 包裹的补丁（幂等，重复运行只替换这段；若无标记段但已有 `name: dsh-model-picker-groups`，视为 bundle 已挂载并跳过追加）：
 
 ```yaml
 - id: ui-model-selection
@@ -68,13 +78,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File D:\path\to\dsh-model-picker-
 
 保存后客户端会热重载插件，不需要重启 DSH。
 
-### 其它平台
+#### 其它平台
 
 在 `<DSH profile>/node_modules/` 下建符号链接指向本仓库，再手工写入上面那段 YAML。
 
 `- id: ui-model-selection` 会命中原官方 bundle 里**嵌套**的条目——loader 的 patch 层按裸 id 扁平索引所有子条目，不必写出完整路径。
 
-### 卸载
+#### 手动安装的卸载
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File D:\path\to\dsh-model-picker-groups\uninstall.ps1
@@ -98,10 +108,10 @@ app.asar 内的官方 client.js
         src/index-region.js   ← 插件注册与 /model 弹窗
 ```
 
-`scripts/build.py`：解析 `app.asar` 头部 → 取出官方 bundle → 校验 11 段 region 顺序 → 替换 5 段 → 全局改名 → 写出 `lib/client.js`、`lib/index.js`、`package.json`。
+`scripts/build.py`：解析 `app.asar` 头部 → 取出官方 bundle → 校验 11 段 region 顺序 → 替换 5 段 → 全局改名 → 写出 `lib/client.js`、`lib/index.js`、`package.json`、`cordis.patch.yml`。
 
 ```bash
-python scripts/build.py            # 重建三个产物
+python scripts/build.py            # 重建四个产物
 python scripts/build.py --check    # 只校验：重放结果必须与 lib/client.js 逐字节一致
 python scripts/build.py --emit     # 反向：把当前 lib/client.js 的 5 段抽回 src/
 ```

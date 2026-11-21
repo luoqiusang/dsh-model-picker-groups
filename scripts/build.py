@@ -70,6 +70,7 @@ PACKAGE_TEMPLATE = b'''{
     "src",
     "scripts",
     "docs",
+    "cordis.patch.yml",
     "README.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
@@ -98,6 +99,9 @@ PACKAGE_TEMPLATE = b'''{
   },
   "author": "luoqiusang",
   "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "inject": [
         "@deepseek-ai/dsh-api-session-controller",
@@ -109,6 +113,13 @@ PACKAGE_TEMPLATE = b'''{
     }
   }
 }
+'''
+
+PATCH_TEMPLATE = b'''- id: ui-model-selection
+  disabled: true
+- insert:
+    - id: model-picker-groups
+      name: dsh-model-picker-groups
 '''
 
 
@@ -264,7 +275,8 @@ def main():
     (ROOT / "lib").mkdir(parents=True, exist_ok=True)
     for path, data in ((ROOT / "lib/client.js", rebuilt),
                        (ROOT / "lib/index.js", INDEX_TEMPLATE),
-                       (ROOT / "package.json", PACKAGE_TEMPLATE)):
+                       (ROOT / "package.json", PACKAGE_TEMPLATE),
+                       (ROOT / "cordis.patch.yml", PATCH_TEMPLATE)):
         with open(path, "wb") as stream:
             stream.write(data)
         print(f"BUILD {path.relative_to(ROOT).as_posix()} bytes={len(data)}")

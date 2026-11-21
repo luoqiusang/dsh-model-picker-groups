@@ -19,6 +19,7 @@
     "src",
     "scripts",
     "docs",
+    "cordis.patch.yml",
     "README.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
@@ -47,6 +48,9 @@
   },
   "author": "luoqiusang",
   "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "inject": [
         "@deepseek-ai/dsh-api-session-controller",
