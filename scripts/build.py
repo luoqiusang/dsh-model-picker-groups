@@ -71,6 +71,7 @@ PACKAGE_TEMPLATE = b'''{
     "scripts",
     "docs",
     "cordis.patch.yml",
+    "screenshots.json",
     "README.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
