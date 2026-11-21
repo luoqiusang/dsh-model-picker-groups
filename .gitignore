@@ -1,0 +1,18 @@
+# Local-only files
+node_modules/
+*.bak
+*.bak-*
+*.log
+_tmp/
+_tmp_*
+
+# Maintainer's local analysis artefacts (not part of the plugin)
+源文件（md）/
+*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

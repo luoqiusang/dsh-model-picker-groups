@@ -1,0 +1,60 @@
+{
+  "name": "dsh-model-picker-groups",
+  "version": "0.1.0",
+  "description": "Collapsible provider groups, always-on search and favourites for the DSH composer model picker.",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "scripts",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "model-picker"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "python scripts/build.py",
+    "check": "python scripts/build.py --check"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luoqiusang/dsh-model-picker-groups.git"
+  },
+  "homepage": "https://github.com/luoqiusang/dsh-model-picker-groups#readme",
+  "bugs": {
+    "url": "https://github.com/luoqiusang/dsh-model-picker-groups/issues"
+  },
+  "author": "luoqiusang",
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-commands",
+        "@deepseek-ai/dsh-api-remotes"
+      ],
+      "platform": "web"
+    }
+  }
+}
