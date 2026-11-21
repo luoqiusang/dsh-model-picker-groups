@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.1.0
+## [Unreleased]
+
+- 修复 `/model` 加载失败提示行与模型行身份冲突导致误选，并补充中文输入法确认键防护。
+
+## [0.1.0]
 
 首个发布版，基于 `@deepseek-ai/dsh-client-ui-model-selection` `0.2.1-rc.3` 的构建产物 fork。
 

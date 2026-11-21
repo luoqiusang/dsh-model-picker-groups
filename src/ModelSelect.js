@@ -328,7 +328,7 @@
 				items[active === -1 ? offset > 0 ? 0 : items.length - 1 : (active + offset + items.length) % items.length]?.focus();
 			};
 			const onRootKeyDown = (event) => {
-				if (event.nativeEvent.isComposing) return;
+				if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
 				if (event.key === "Escape" && open) {
 					event.preventDefault();
 					if (pane === "model" && query !== "") changeQuery("");

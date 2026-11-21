@@ -1,7 +1,7 @@
 		//#region lib/types/client/index.js
-		/** One selectable row's id: an opaque row key (resolved by lookup, never parsed). */
+		/** Model row identity: typed prefix plus an opaque route/model key, resolved by lookup. */
 		function rowId(providerId, modelId) {
-			return `${providerId}/${modelId}`;
+			return `model:${providerId}/${modelId}`;
 		}
 		/** Flatten the directory into popup rows; failure rows are listed for visibility but never selectable. */
 		function optionsOf(directory, t) {
@@ -22,7 +22,7 @@
 				}
 			}
 			for (const failure of directory.failures) rows.push({
-				id: `failure/${failure.id}`,
+				id: `failure:${failure.id}`,
 				label: failure.id === "deepseek-account" ? t("provider.account") : failure.name,
 				detail: t("option.loadError", { message: failure.message })
 			});
@@ -36,6 +36,8 @@
 		* @returns the row's model selection, or undefined for failure rows / stale ids.
 		*/
 		function selectionOf(state, id) {
+			// Only the first colon is structural; route/model ids may contain ':' or '/'.
+			if (typeof id !== "string" || id.slice(0, id.indexOf(":")) !== "model") return;
 			for (const group of state.groups) for (const model of group.models) {
 				if (rowId(group.id, model.id) !== id) continue;
 				const reasoningEffort = state.current?.provider === group.id && state.current.model === model.id ? state.current?.reasoningEffort ?? model.reasoning?.defaultEffort : model.reasoning?.defaultEffort;
@@ -96,7 +98,7 @@
 							if (sessions.subagentAddress(session.sessionId) !== void 0) throw new Error("model selection is unavailable for addressed subagent sessions");
 							const directory = models.directoryFor(session.sessionId);
 							const selection = selectionOf(directory.store.getSnapshot(), option.id);
-							if (selection === void 0) throw new Error("this provider's catalog failed to load — pick a model from a loaded group");
+							if (selection === void 0) return;
 							const result = await directory.select(selection);
 							if (!result.ok) {
 								if (result.error.code === "session/writer-held") throw new Error(t("error.sessionInUse"));

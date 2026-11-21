@@ -118,12 +118,14 @@ python scripts/build.py --emit     # 反向：把当前 lib/client.js 的 5 段�
 
 `app.asar` 位置查找顺序：`--asar <path>` → `DSH_ASAR` → `DSH_INSTALL` → 常见安装路径（`D:\dsh`、Program Files、`/Applications/…`、`/opt/…`）。找不到时脚本会列出试过的路径。
 
-修改流程：改 `lib/client.js` → `--emit` 回写 `src/` → `--check` 必须 PASS → `node --check lib/client.js`。
+修改流程：改 `lib/client.js` → `--emit` 回写 `src/` → `--check` 必须 PASS → `node --check lib/client.js` → `node scripts/test-model-rows.mjs`（回归测试：行 id 分域、失败行不可选、IME 确认键、同名合并路由）。
 
 为什么不用「直接改 `app.asar`」：它的 18,188 个条目**每条都带 integrity 校验**，改字节会破坏完整性校验；重打包则每次升级 DSH 都要重做。插件形式可逆、可热重载，也不用碰安装目录。
 
-## 已知限制
+## 已知限制 / 未验证
 
+- 输入法验收（未在真实 Windows 输入法上复现过）：输入拼音 → 按 Enter 确认候选词 → 菜单应保持打开、模型不应改变。
+- `/model` 加载失败行仅作提示，不会切换模型；当前官方 `popupSelect` 不支持禁用行或取消成功关闭，点击提示行仍会由宿主关闭弹窗（待宿主提供拒选接口）。
 - 依赖官方内部结构（region 标记、`MenuGroup` 的 `data-menu-group-*` 属性、`MenuSurface` 与 CSS 类名、slot 名），DSH 大版本升级必然要跟一次重建。
 - 分组标题**不做吸顶**：吸顶需要不透明底色，而官方主题的强调色是 10% 透明 token，叠加「折叠导致的高度变化」会持续出现标题压住模型行、来回抢位，因此让标题随列表滚动。
 - 收藏只能鼠标点击（收藏行可键盘选中模型，但星标本身不进 `itemRefs` 键盘序列）。
